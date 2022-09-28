@@ -34,8 +34,6 @@ def download():
     print("Quality: " + str(v.get()))
     YoutubeLink = str(inputYoutubeLink.get())
     # print(YoutubeLink)
-    # YoutubeLink = input("Input the video YoutubeLink: ") 
-    # YouTube('https://youtu.be/'+YoutubeLink).streams.first().download()
     if(YoutubeLink):
         try:
             quality = str(v.get())
