@@ -10,34 +10,30 @@ from tkinter import ttk
 import shutil
 import clipboard
 import base64
+import tempfile
+# def clearTemp():
 
 def file_save(out_file, type = 'video'):
     file_name, file_extension = os.path.splitext(out_file)
     arrayName = file_name.split("\\")
+    fo = tempfile.gettempdir()
     if(type == 'audio'):
+        tmpFile = fo+".mp3"
         filetypes = [("MP3 File", ".mp3")]
     else:
+        tmpFile = fo+".mp4"
         filetypes = [("MP4 File", ".mp4")]
     file_path = filedialog.asksaveasfilename(confirmoverwrite=False, filetypes=filetypes, defaultextension=".mp3", initialfile=arrayName.pop())
+    shutil.move(out_file, tmpFile)
     if(file_path):
         if(type == 'audio'):
-            os.rename(out_file, 'file.mp3')
-            shutil.move('file.mp3', file_path)
+            # os.rename(out_file, 'file.mp3')
+            shutil.move(tmpFile, file_path)
         else:
-            os.rename(out_file, 'file.mp4')
-            shutil.move('file.mp4', file_path)
-        clear()
-        tk.messagebox.showinfo(title="Sucesso!", message="MP3 Baixado com sucesso!")
-    
-    try:
-        cdir = os.getcwd()
-        test = os.listdir(cdir)
-        for item in test:
-            if item.endswith(".mp4"):
-                os.remove(os.path.join(cdir, item))
-    except:
-        print("Fail to delete files .mp4")
-        
+            # os.rename(out_file, 'file.mp4')
+            shutil.move(tmpFile, file_path)
+        clear(type)
+        tk.messagebox.showinfo(title="Sucesso!", message="MP3/Video Baixado com sucesso!")
 
 def download(type = 'video'):
     if(type == 'audio'):
@@ -65,25 +61,17 @@ def download(type = 'video'):
                 yt = YouTube(YoutubeLink)
                 out_file = yt.streams.filter( mime_type=mime_type, abr=quality+"kbps",  progressive=False, type="audio").first().download()
                 file_save(out_file, 'audio')
-            except:
+            except NameError:
                 tk.messagebox.showerror(title="Falha!", message="Por favor, tente uma qualidade de áudio diferente!")
         else:
-            print("Quality: " + str(q.get()))
             try:
-                quality = str(q.get())
-                mime_type = 'video/mp4'
-                # if (quality == "128"):
-                #     mime_type = 'audio/mp4'
-                # else:
-                #     mime_type = 'audio/webm'
-
-                print("Mime Type: " + mime_type)
                 yt = YouTube(YoutubeLink)
                 out_file = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download()
                 file_save(out_file, 'video')
             except NameError:
-                tk.messagebox.showerror(title="Falha!", message="Por favor, tente uma qualidade de vídeo diferente!")
-        
+                tk.messagebox.showerror(title="Falha!", message="Não foi possível baixar o video!")
+    
+
 def clear(type = 'video'):
     if(type == 'audio'):
         inputAudioLink.delete(0,tk.END)
@@ -203,29 +191,6 @@ btnDownloadVideo.grid(column=2, row=1, padx=10, pady=1, ipady=2, ipadx=2)
 btnClearVideo = tk.Button(panel2, image=iconDel, command=lambda:clear('video'), foreground="#fafafa", background='#EA3E3E')
 btnClearVideo.grid(column=3, row=1, padx=10, pady=1, ipadx=1, ipady=1)
 
-txtQualityVideo = tk.Label(panel2, font="Calibri 12", text='Quality:')
-txtQualityVideo.grid(column=0, columnspan=4, row=2, padx=5, pady=0, sticky=tk.W,)
-
-def setQualityVideo():
-    print(q.get())
-
-q = tk.IntVar()
-q.set(1080)
-
-videoQualities = [("360p", 360),
-   	         ("720p", 720),
-   	         ("1080p", 1080)]
-
-row = 3
-for quality, val in videoQualities:
-    tk.Radiobutton(panel2, 
-                   text=quality,
-                   padx = 20, 
-                   variable=q, 
-                   command=setQualityVideo,
-                   value=val).grid(column=0, row=row, padx=1, pady=0, sticky=tk.W,)
-    row+=1
-     
 #######################################################################    
 # TAB SOBRE
 panel3 = tk.Frame(tab3, width=100, bg="#96A1A7")
