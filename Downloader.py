@@ -13,18 +13,22 @@ import base64
 import tempfile
 # def clearTemp():
 
+desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') 
+
+
 def file_save(out_file, type = 'video'):
     file_name, file_extension = os.path.splitext(out_file)
     arrayName = file_name.split("\\")
     fo = tempfile.gettempdir()
     if(type == 'audio'):
-        tmpFile = fo+".mp3"
+        tmpFile = fo+"\\file.mp3"
         filetypes = [("MP3 File", ".mp3")]
     else:
-        tmpFile = fo+".mp4"
+        tmpFile = fo+"\\file.mp4"
         filetypes = [("MP4 File", ".mp4")]
-    file_path = filedialog.asksaveasfilename(confirmoverwrite=False, filetypes=filetypes, defaultextension=".mp3", initialfile=arrayName.pop())
+
     shutil.move(out_file, tmpFile)
+    file_path = filedialog.asksaveasfilename(confirmoverwrite=False, filetypes=filetypes, defaultextension=".mp3", initialfile=arrayName.pop())
     if(file_path):
         if(type == 'audio'):
             # os.rename(out_file, 'file.mp3')
